@@ -1,0 +1,56 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: aws-provider-config
+spec:
+  compositeTypeRef:
+    apiVersion: example.crossplane.io/v1
+    kind: XAWSProviderConfig
+  mode: Pipeline
+  pipeline:
+  - step: pull-extra-resources
+    functionRef:
+      name: function-extra-resources
+    input:
+      apiVersion: extra-resources.fn.crossplane.io/v1beta1
+      kind: Input
+      spec:
+        extraResources:
+          - kind: EnvironmentConfig
+            into: envConfs
+            apiVersion: apiextensions.crossplane.io/v1alpha1
+            type: Selector
+            selector:
+              maxMatch: 3
+              minMatch: 1
+              matchLabels:
+                - key: environment
+                  type: FromCompositeFieldPath
+                  valueFromFieldPath: spec.parameters.environment
+  - step: go-templating
+    functionRef:
+      name: function-go-templating
+    input:
+      apiVersion: gotemplating.fn.crossplane.io/v1beta1
+      kind: GoTemplate
+      source: Inline
+      inline:
+        template: |
+            {{- $envConfs := index (index .context "apiextensions.crossplane.io/extra-resources") "envConfs" }}
+            {{- range $i, $env := $envConfs }}
+            {{- $arn := (dig "data" "provisionArn" "" $env ) }}
+            {{- if $arn }}
+            ---
+            apiVersion: aws.upbound.io/v1beta1
+            kind: ProviderConfig
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: awsProviderConfig-{{ index $env "metadata" "name" }}-{{ $i }}
+                gotemplating.fn.crossplane.io/ready: "True"
+            spec:
+              assumeRoleARN:
+                {{ $arn }}
+              stringText:
+                {{ print $arn }}
+            {{- end }}
+            {{- end }}

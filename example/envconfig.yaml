@@ -1,0 +1,33 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: EnvironmentConfig
+metadata:
+  name: team-1
+  labels:
+    environment: dev
+    team: team-1
+data:
+  teamName: test-1
+  provisionArn: "arn:aws:iam::609897127049:user/steven"
+  accountID: "609897127049"
+---
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: EnvironmentConfig
+metadata:
+  name: team-2
+  labels:
+    environment: dev
+    team: team-2
+data:
+  teamName: test-2
+  provisionArn: "arn:aws:iam::609897127049:user/steven2"
+---
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: EnvironmentConfig
+metadata:
+  name: team-2-prod
+  labels:
+    environment: prod
+    team: team-2
+data:
+  teamName: test-2
+  provisionArn: "arn:aws:iam::609897127049:user/steven3"
