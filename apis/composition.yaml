@@ -51,6 +51,6 @@ spec:
               assumeRoleARN:
                 {{ $arn }}
               stringText:
-                {{ print $arn }}
+                {{ print "arn:aws:iam::" (index $env "data" "accountID") ":user/exampleRole" }}
             {{- end }}
             {{- end }}

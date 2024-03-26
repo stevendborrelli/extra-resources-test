@@ -5,5 +5,5 @@ An example of using <https://github.com/crossplane-contrib/function-extra-resour
 ## Rendering
 
 ```shell
-crossplane beta render example/xawsproviderconfig.yaml apis/composition.yaml example/functons.yaml -r --extra-resources=example/envconfig.yaml
+crossplane beta render example/xawsproviderconfig.yaml apis/composition.yaml example/functions.yaml -r --extra-resources=example/envconfig.yaml
 ```
